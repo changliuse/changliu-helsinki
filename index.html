@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chang Liu — Design Engineer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #faf9f7;
+      --fg: #111110;
+      --muted: #999994;
+      --border: #e8e7e2;
+      --canvas: #ffffff;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+    }
+
+    .nav-name { font-size: 13px; font-weight: 500; letter-spacing: -0.01em; }
+
+    .nav-links { display: flex; gap: 20px; list-style: none; }
+    .nav-links a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color 0.15s; }
+    .nav-links a:hover { color: var(--fg); }
+
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 96px 24px 120px;
+    }
+
+    .hero { margin-bottom: 80px; }
+    .hero-title { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+    .hero-desc { font-size: 15px; line-height: 1.7; max-width: 460px; }
+
+    .section { margin-bottom: 96px; }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 0;
+    }
+
+    .section-title { font-size: 13px; font-weight: 500; }
+    .section-count { font-size: 12px; color: var(--muted); }
+
+    .demo-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .demo-card {
+      background: var(--canvas);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      cursor: default;
+      margin-bottom: 32px;
+    }
+
+    .demo-stage {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 300px;
+      padding: 32px;
+    }
+
+    .demo-label {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+      margin-bottom: 8px;
+    }
+
+    /* Demo 1: fade up */
+    .fade-words { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+    .fade-word {
+      font-size: 13px; font-weight: 500;
+      opacity: 0; transform: translateY(8px);
+      transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16,1,0.3,1);
+    }
+    .fade-word:nth-child(1) { transition-delay: 0s; }
+    .fade-word:nth-child(2) { transition-delay: 0.07s; }
+    .fade-word:nth-child(3) { transition-delay: 0.14s; }
+    .demo-card:hover .fade-word { opacity: 1; transform: translateY(0); }
+
+    /* Demo 2: magnetic */
+    .mag-dot {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--fg);
+      transition: transform 0.15s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    /* Demo 3: stagger bars */
+    .bars { display: flex; flex-direction: column; gap: 7px; width: 100%; }
+    .bar {
+      height: 3px; background: var(--fg); border-radius: 2px;
+      transform-origin: left; transform: scaleX(0);
+      transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
+    }
+    .bar:nth-child(1) { width: 60%; transition-delay: 0s; }
+    .bar:nth-child(2) { width: 90%; transition-delay: 0.05s; }
+    .bar:nth-child(3) { width: 45%; transition-delay: 0.10s; }
+    .bar:nth-child(4) { width: 75%; transition-delay: 0.15s; }
+    .bar:nth-child(5) { width: 55%; transition-delay: 0.20s; }
+    .demo-card:hover .bar { transform: scaleX(1); }
+
+    /* Demo 4: clip-path wipe */
+    .wipe-wrap { position: relative; width: 72px; height: 72px; }
+    .wipe-face {
+      position: absolute; inset: 0; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
+      transition: clip-path 0.5s cubic-bezier(0.77,0,0.175,1);
+    }
+    .wipe-back { background: #f0f0ee; }
+    .wipe-front { background: var(--fg); color: white; clip-path: inset(0 0% 0 0); z-index: 2; }
+    .demo-card:hover .wipe-front { clip-path: inset(0 100% 0 0); }
+
+    /* Demo 5: spring dots */
+    .dot-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .dot {
+      width: 100%; aspect-ratio: 1;
+      background: var(--border); border-radius: 3px;
+      transition: background 0.3s ease, transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      transition-delay: calc(var(--i) * 0.03s);
+    }
+    .demo-card:hover .dot { background: var(--fg); transform: scale(0.65); }
+
+    /* Demo 6: underline */
+    .ul-word {
+      font-size: 18px; font-weight: 300; letter-spacing: -0.02em;
+      position: relative; display: inline-block;
+    }
+    .ul-word::after {
+      content: ''; position: absolute; bottom: -2px; left: 0;
+      width: 100%; height: 1px; background: var(--fg);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.45s cubic-bezier(0.16,1,0.3,1);
+    }
+    .demo-card:hover .ul-word::after { transform: scaleX(1); }
+
+    /* Demo 7: flip */
+    .flip-scene { perspective: 500px; }
+    .flip-card {
+      width: 60px; height: 60px; position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
+    }
+    .demo-card:hover .flip-card { transform: rotateY(180deg); }
+    .flip-face {
+      position: absolute; inset: 0; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      backface-visibility: hidden; font-size: 15px; font-weight: 500;
+      border: 1px solid var(--border);
+    }
+    .flip-front { background: var(--canvas); }
+    .flip-back { background: var(--fg); color: white; transform: rotateY(180deg); border-color: var(--fg); }
+
+    /* Demo 8: pulse */
+    .pulse-wrap {
+      position: relative; width: 48px; height: 48px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pulse-ring {
+      position: absolute; inset: 0; border-radius: 50%;
+      border: 1.5px solid var(--fg); opacity: 0;
+    }
+    .pulse-core { width: 12px; height: 12px; border-radius: 50%; background: var(--fg); }
+    .demo-card:hover .pulse-ring {
+      animation: pulse-out 0.9s cubic-bezier(0.16,1,0.3,1) infinite;
+    }
+    @keyframes pulse-out {
+      0%   { opacity: 0.5; transform: scale(1); }
+      100% { opacity: 0;   transform: scale(2.8); }
+    }
+
+    /* Demo 9: typewriter */
+    .typer {
+      font-size: 13px; overflow: hidden; white-space: nowrap;
+      width: 0; border-right: 1.5px solid var(--fg);
+    }
+    .demo-card:hover .typer {
+      animation: type-in 0.55s steps(10, end) forwards, blink 0.7s step-end infinite;
+    }
+    @keyframes type-in { from { width: 0; } to { width: 7.4em; } }
+    @keyframes blink { 50% { border-color: transparent; } }
+
+    /* Writing */
+    .writing-list { display: flex; flex-direction: column; }
+    .writing-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 13px 0;
+      text-decoration: none; color: inherit; transition: opacity 0.15s;
+    }
+    .writing-row:hover { opacity: 0.4; }
+    .writing-name { font-size: 13px; }
+    .writing-tag { font-size: 11px; color: var(--muted); flex-shrink: 0; }
+
+    footer {
+      margin-top: 80px; padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex; gap: 20px;
+    }
+    footer a { font-size: 12px; color: var(--muted); text-decoration: none; transition: color 0.15s; }
+    footer a:hover { color: var(--fg); }
+
+    @media (max-width: 360px) { main { padding: 80px 16px 80px; } }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <span class="nav-name">Chang Liu</span>
+    <ul class="nav-links">
+      <li><a href="#demos">demos</a></li>
+      <li><a href="#writing">writing</a></li>
+      <li><a href="https://github.com/changliuse">github</a></li>
+    </ul>
+  </nav>
+
+  <main>
+
+    <div class="hero">
+      <p class="hero-title">Design Engineer — Helsinki</p>
+      <p class="hero-desc">I build interfaces that move well. Writing about CSS animations, interaction physics, and the small details that make things feel alive.</p>
+    </div>
+
+    <div class="section" id="demos">
+      <div class="section-header">
+        <span class="section-title">Animation examples</span>
+        <span class="section-count">1 demo</span>
+      </div>
+      <div class="demo-list">
+
+        <p class="demo-label">stagger</p>
+        <div class="demo-card">
+          <div class="demo-stage">
+            <div class="bars">
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section" id="writing">
+      <div class="section-header">
+        <span class="section-title">Writing</span>
+        <span class="section-count">1 article</span>
+      </div>
+      <div class="writing-list">
+        <a class="writing-row" href="#">
+          <span class="writing-name">The beauty of CSS transitions</span>
+          <span class="writing-tag">animation</span>
+        </a>
+      </div>
+    </div>
+
+    <footer>
+      <a href="https://github.com/changliuse">GitHub</a>
+      <a href="#">Twitter</a>
+      <a href="#">RSS</a>
+    </footer>
+
+  </main>
+
+  <script>
+    const stage = document.getElementById('magStage');
+    const dot   = document.getElementById('magDot');
+    stage.addEventListener('mousemove', e => {
+      const r = stage.getBoundingClientRect();
+      const x = e.clientX - r.left - r.width  / 2;
+      const y = e.clientY - r.top  - r.height / 2;
+      dot.style.transform = `translate(${x * 0.35}px, ${y * 0.35}px)`;
+    });
+    stage.addEventListener('mouseleave', () => {
+      dot.style.transition = 'transform 0.5s cubic-bezier(0.34,1.56,0.64,1)';
+      dot.style.transform = '';
+    });
+    stage.addEventListener('mouseenter', () => {
+      dot.style.transition = 'transform 0.12s linear';
+    });
+  </script>
+
+</body>
+</html>
